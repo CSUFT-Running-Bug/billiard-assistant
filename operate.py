@@ -1,19 +1,21 @@
+import io
+import time
+import device
 import cv2
 import numpy as np
-import time
-import bfs
 from PIL import Image
-import io
+import bfs
 
-ir = 70
-r = 100
-pv1 = 220
-pv2 = 255
-left_top = (371, 261)
-right_bottom = (1783, 947)
-left_top_m = (348, 238)
-right_bottom_m = (1807, 970)
+# 内圆半径、外圆半径
+ir, r = 70, 100
+# 颜色阈值
+pv1, pv2 = 220, 255
 border = 10
+
+normal, maximum, edge, f_name = device.resolution()
+left_top, right_bottom = normal
+left_top_m, right_bottom_m = maximum
+left_top_e, right_bottom_e = edge
 
 
 def draw_xp(img, p):
@@ -126,12 +128,13 @@ def final_run(data):
     im = cv2.cvtColor(np.asarray(im), cv2.COLOR_RGB2BGR)
     print('图片解码：' + str(time.time() - start))
 
+    # 裁剪图片，缩小匹配范围
     crop = im[left_top_m[1] - border:right_bottom_m[1] + border, left_top_m[0] - border:right_bottom_m[0] + border]
     crop = cv2.cvtColor(crop, cv2.COLOR_BGR2GRAY)
 
     stime = time.time()
     # 匹配模板
-    template = cv2.imread('template.png', 0)
+    template = cv2.imread('templates/%s.png' % f_name, 0)
     w, h = template.shape[::-1]
     res = cv2.matchTemplate(crop, template, cv2.TM_CCOEFF_NORMED)
     threshold = 0.7
@@ -156,11 +159,12 @@ def final_run(data):
                     li.append((i, j))
         print('找点：' + str(time.time() - stime))
 
-        # 圆
-        # cv2.circle(im, (oy, ox), ir, (7, 249, 151), 2)
-        # cv2.circle(im, (oy, ox), r, (7, 249, 151), 2)
+        # 画圆
+        cv2.circle(im, (oy, ox), ir, (7, 249, 151), 2)
+        cv2.circle(im, (oy, ox), r, (7, 249, 151), 2)
 
         cv2.rectangle(im, left_top, right_bottom, (7, 249, 151), 2)
+        cv2.rectangle(im, left_top_m, right_bottom_m, (200, 100, 0), 2)
 
         stime = time.time()
         # 找集合、画线
@@ -173,6 +177,7 @@ def final_run(data):
         print('找集合、画线：' + str(time.time() - stime))
     else:
         print('未匹配到')
+    im = im[left_top_e[1]:right_bottom_e[1], left_top_e[0]:right_bottom_e[0]]
     cv2.imshow('test', im)
     cv2.waitKey(1)
     print('总时间：' + str(time.time() - start))
