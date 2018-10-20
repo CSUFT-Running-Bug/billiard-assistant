@@ -16,7 +16,7 @@
 
 ## 用法
 
-### 安装运行minicap
+### 安装minicap
 
 先进入minicap目录。
 ```bash
@@ -49,6 +49,8 @@ adb shell chmod 777 /data/local/tmp/minicap
 adb shell LD_LIBRARY_PATH=/data/local/tmp /data/local/tmp/minicap -P 2160x1080@2160x1080/0 -t
 ```
 
+### 运行
+
 运行minicap。
 ```bash
 adb shell LD_LIBRARY_PATH=/data/local/tmp /data/local/tmp/minicap -P 2160x1080@2160x1080/0
@@ -59,9 +61,7 @@ adb shell LD_LIBRARY_PATH=/data/local/tmp /data/local/tmp/minicap -P 2160x1080@2
 adb forward tcp:1717 localabstract:minicap
 ```
 
-到这里minicap就开始运行了，接下来安装python模块。
-
-### 运行代码
+运行python代码
 ```bash
 cd ../
 pip install -r requirements.txt
